@@ -32,3 +32,10 @@ def ordenar_por_nome():
 
 def ordenar_por_preco():
     return sorted(produtos.values(), key=lambda p: p.preco)
+
+def ordenar_por_nome():
+    return sorted(produtos.values(), key=lambda p: p.nome.lower())
+
+
+def ordenar_por_preco():
+    return sorted(produtos.values(), key=lambda p: p.preco)

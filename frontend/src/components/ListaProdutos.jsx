@@ -9,6 +9,7 @@ export default function ListaProdutos({ onCarrinhoAtualizado }) {
   const [erro, setErro] = useState(null)
   const [ordenacao, setOrdenacao] = useState('padrao')
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [busca, setBusca] = useState('')
 
   const carregarProdutos = async () => {
     try {
@@ -42,6 +43,25 @@ export default function ListaProdutos({ onCarrinhoAtualizado }) {
       setCarregando(false)
     }
   }
+
+  const handleBuscar = async () => {
+  try {
+    setCarregando(true)
+
+    if (busca.trim() === '') {
+      await carregarProdutos()
+      return
+    }
+
+    const { data } = await produtosAPI.buscarPorNome(busca)
+    setProdutos(data)
+    setErro(null)
+  } catch (err) {
+    setErro('Erro ao buscar produto: ' + err.message)
+  } finally {
+    setCarregando(false)
+  }
+}
 
   const handleAdicionarAoCarrinho = async (produto, quantidade) => {
     try {
@@ -78,9 +98,35 @@ export default function ListaProdutos({ onCarrinhoAtualizado }) {
   return (
     <div>
       <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div className="flex gap-2">          
         <div className="flex gap-2">
+          <input
+            type="text"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar produto por nome"
+            className="px-4 py-2 border border-gray-300 rounded w-full"
+          />
+
           <button
-            onClick={() => handleOrdenar('padrao')}
+            onClick={handleBuscar}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Buscar
+          </button>
+
+          <button
+            onClick={() => {
+              setBusca('')
+              carregarProdutos()
+            }}
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          >
+            Limpar
+          </button>
+
+          <button
+            onClick={carregarProdutos}
             className={`px-4 py-2 rounded transition ${
               ordenacao === 'padrao'
                 ? 'bg-blue-600 text-white'
@@ -89,6 +135,8 @@ export default function ListaProdutos({ onCarrinhoAtualizado }) {
           >
             Padrão
           </button>
+        </div>
+
           <button
             onClick={() => handleOrdenar('nome')}
             className={`px-4 py-2 rounded transition ${

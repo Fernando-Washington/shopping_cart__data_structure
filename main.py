@@ -26,4 +26,4 @@ def health():
 
 app.include_router(produtos_router)
 app.include_router(carrinho_router)
-app.include_router(compras_router)
+app.include_router(compras_router)  
